@@ -1,0 +1,79 @@
+<?php
+/* $Id$ */
+
+/**
+ * Implementation of hook_help().
+ */
+function search404_help($section) {
+  switch ($section) {
+    case 'admin/modules#description':
+      return t('Shows a 404-page with the results of a search for the keywords in the URI.');
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function search404_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $items[] = array('path' => 'search404', 
+      'title' => t('Page not found'), 'access' => true, 
+      'callback' => 'search404_page', 'type' => MENU_CALLBACK);
+  }
+
+  return $items;
+}
+
+/**
+ * Main search function.
+ *
+ * Updated: Improved by using (stealing) code by Steven
+ * - http://drupal.org/node/12668
+ */
+function search404_page() {
+  drupal_set_title(t('Page not found'));
+
+  $output = t('<p>The page you requested was not found.</p>');
+
+  if (user_access('search content')) {
+    $ignore = array('dump', 'zip', 'avi', 'a');
+
+    $uri = urldecode(request_uri());
+    $keys = split('[^A-Za-z]+', $uri);
+    $keys = array_diff($keys, $ignore);
+    $keys = trim(implode(' ', $keys));
+    if ($keys) {
+      $results = search_data($keys);
+      if ($results) {
+        $output .= t('<p>For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;:</p>', array('%keys' => $keys));
+        $output .= $results;
+      } else {
+        $output .= t('<p>A search was performed for &quot;<i>%keys</i>&quot;, but nothing was found.</p>', array('%keys' => $keys));
+      }
+    }
+  }
+
+  return $output;
+}
+
+/**
+ * Implementation of hook_settings().
+ */
+function search404_settings() {
+  $content = '';
+
+  if (variable_get('search404_enable', false)) {
+    variable_set('previous_site_404', variable_get('site_404', ''));
+    variable_set('site_404', 'search404');
+  } else {
+    variable_set('site_404', variable_get('previous_site_404', ''));
+  }
+
+  $content .= form_checkbox(t('Set Search 404 to be your default 404 page.'), 'search404_enable', 1, variable_get('site_404', '') == 'search404');
+
+  return $content;
+}
+
+?>
