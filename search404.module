@@ -62,18 +62,26 @@ function search404_page() {
  * Implementation of hook_settings().
  */
 function search404_settings() {
-  $content = '';
+  $form['search404_enable'] = array('#type' => 'checkbox',
+    '#title' => t('Set Search 404 to be your default 404 page.'),
+    '#default_value' => search404_is_enabled);
+    
+  return $form;
+}
 
-  if (variable_get('search404_enable', false)) {
+function search404_settings_form_submit($form_id, $form_values) {
+  if ($form_values['search404_enable'] && !search404_is_enabled()) {
     variable_set('previous_site_404', variable_get('site_404', ''));
     variable_set('site_404', 'search404');
-  } else {
+    drupal_set_message(t('Search 404 is now enabled.'));
+  } elseif (!$form_values['search404_enable'] && search404_is_enabled()) {
     variable_set('site_404', variable_get('previous_site_404', ''));
+    drupal_set_message(t('Search 404 is now disabled.'));
   }
+}
 
-  $content .= form_checkbox(t('Set Search 404 to be your default 404 page.'), 'search404_enable', 1, variable_get('site_404', '') == 'search404');
-
-  return $content;
+function search404_is_enabled() {
+  return (variable_get('site_404', '') == 'search404');
 }
 
 ?>
