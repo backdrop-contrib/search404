@@ -18,8 +18,8 @@ function search404_menu($may_cache) {
   $items = array();
 
   if ($may_cache) {
-    $items[] = array('path' => 'search404', 
-      'title' => t('Page not found'), 'access' => true, 
+    $items[] = array('path' => 'search404',
+      'title' => t('Page not found'), 'access' => true,
       'callback' => 'search404_page', 'type' => MENU_CALLBACK);
   }
 
@@ -49,7 +49,8 @@ function search404_page() {
       if ($results) {
         $output .= t('<p>For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;:</p>', array('%keys' => $keys));
         $output .= $results;
-      } else {
+      }
+      else {
         $output .= t('<p>A search was performed for &quot;<i>%keys</i>&quot;, but nothing was found.</p>', array('%keys' => $keys));
       }
     }
@@ -62,10 +63,12 @@ function search404_page() {
  * Implementation of hook_settings().
  */
 function search404_settings() {
-  $form['search404_enable'] = array('#type' => 'checkbox',
+  $form['search404_enable'] = array(
+    '#type' => 'checkbox',
     '#title' => t('Set Search 404 to be your default 404 page.'),
-    '#default_value' => search404_is_enabled);
-    
+    '#default_value' => search404_is_enabled(),
+  );
+
   return $form;
 }
 
@@ -74,7 +77,8 @@ function search404_settings_form_submit($form_id, $form_values) {
     variable_set('previous_site_404', variable_get('site_404', ''));
     variable_set('site_404', 'search404');
     drupal_set_message(t('Search 404 is now enabled.'));
-  } elseif (!$form_values['search404_enable'] && search404_is_enabled()) {
+  }
+  elseif (!$form_values['search404_enable'] && search404_is_enabled()) {
     variable_set('site_404', variable_get('previous_site_404', ''));
     drupal_set_message(t('Search 404 is now disabled.'));
   }
