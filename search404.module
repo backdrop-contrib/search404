@@ -41,10 +41,19 @@ function search404_page() {
     $ignore = array('dump', 'zip', 'avi', 'a');
 
     $uri = urldecode(request_uri());
-    $keys = split('[^A-Za-z]+', $uri);
+    $keys = split('[^A-Za-z0-9]+', $uri);
     $keys = array_diff($keys, $ignore);
     $keys = trim(implode(' ', $keys));
     if ($keys) {
+      // First, check to see if there is exactly 1 result
+      if (variable_get('search404_jump', false)) {
+        $results = module_invoke('node', 'search', 'search', $keys);
+        if (count($results) == 1) {
+          drupal_set_message(t('A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
+          drupal_goto('node/' . $results[0]['node']->nid);
+        }
+      }
+
       $results = search_data($keys);
       if ($results) {
         $output .= t('<p>For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;:</p>', array('%keys' => $keys));
@@ -69,10 +78,18 @@ function search404_settings() {
     '#default_value' => search404_is_enabled(),
   );
 
+  $form['search404_jump'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Jump directly to the search result when there is only one result.'),
+    '#default_value' => variable_get('search404_jump', false),
+  );
+
   return $form;
 }
 
 function search404_settings_form_submit($form_id, $form_values) {
+  variable_set('search404_jump', $form_values['search404_jump']);
+
   if ($form_values['search404_enable'] && !search404_is_enabled()) {
     variable_set('previous_site_404', variable_get('site_404', ''));
     variable_set('site_404', 'search404');
