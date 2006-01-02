@@ -33,32 +33,31 @@ function search404_menu($may_cache) {
  * - http://drupal.org/node/12668
  */
 function search404_page() {
-  drupal_set_title(t('Page not found'));
-
   $output = t('<p>The page you requested was not found.</p>');
 
   if (user_access('search content')) {
     $ignore = array('dump', 'zip', 'avi', 'a');
-
+    
     $uri = urldecode(request_uri());
     $keys = split('[^A-Za-z0-9]+', $uri);
     $keys = array_diff($keys, $ignore);
     $keys = trim(implode(' ', $keys));
     if ($keys) {
-      // First, check to see if there is exactly 1 result
-      if (variable_get('search404_jump', false)) {
-        $results = module_invoke('node', 'search', 'search', $keys);
-        if (count($results) == 1) {
+      // Get search results
+      $results = module_invoke('node', 'search', 'search', $keys);
+
+      if (isset($results) && is_array($results) && count($results)) {
+        // First, check to see if there is exactly 1 result
+        if (variable_get('search404_jump', false) && count($results) == 1) {
           drupal_set_message(t('A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
           drupal_goto('node/' . $results[0]['node']->nid);
         }
-      }
 
-      $results = search_data($keys);
-      if ($results) {
-        $output .= t('<p>For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;:</p>', array('%keys' => $keys));
-        $output .= $results;
+        // Otherwise, redirect to a search page
+        drupal_set_message(t('For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;:', array('%keys' => $keys)));
+        drupal_goto('search/node/' . $keys);
       }
+      // If there are not results, tell the user
       else {
         $output .= t('<p>A search was performed for &quot;<i>%keys</i>&quot;, but nothing was found.</p>', array('%keys' => $keys));
       }
