@@ -49,12 +49,12 @@ function search404_page() {
       if (isset($results) && is_array($results) && count($results)) {
         // First, check to see if there is exactly 1 result
         if (variable_get('search404_jump', false) && count($results) == 1) {
-          drupal_set_message(t('A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
+          drupal_set_message(t('The page you requested does not exist. A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
           drupal_goto('node/' . $results[0]['node']->nid);
         }
 
         // Otherwise, redirect to a search page
-        drupal_set_message(t('For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;:', array('%keys' => $keys)));
+        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;.', array('%keys' => $keys)));
         drupal_goto('search/node/' . $keys);
       }
       // If there are not results, tell the user
