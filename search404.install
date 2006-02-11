@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Setup Search 404 by changing Drupal's 404-page to search404.
+ */
+function search404_install() {
+  search404_enable();
+}
