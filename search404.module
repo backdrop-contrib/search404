@@ -38,8 +38,8 @@ function search404_page() {
   if (user_access('search content')) {
     $ignore = array('dump', 'zip', 'avi', 'a');
     
-    $uri = urldecode(request_uri());
-    $keys = split('[^A-Za-z0-9]+', $uri);
+    $q = $_REQUEST['destination'];
+    $keys = split('[^A-Za-z0-9]+', $q);
     $keys = array_diff($keys, $ignore);
     $keys = trim(implode(' ', $keys));
     if ($keys) {
@@ -50,12 +50,16 @@ function search404_page() {
         // First, check to see if there is exactly 1 result
         if (variable_get('search404_jump', false) && count($results) == 1) {
           drupal_set_message(t('The page you requested does not exist. A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
-          drupal_goto('node/' . $results[0]['node']->nid);
+          // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
+          $_REQUEST['destination'] = 'node/' . $results[0]['node']->nid;
+          drupal_goto();
         }
 
         // Otherwise, redirect to a search page
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;.', array('%keys' => $keys)));
-        drupal_goto('search/node/' . $keys);
+        // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
+        $_REQUEST['destination'] = 'search/node/' . $keys;
+        drupal_goto();
       }
       // If there are not results, tell the user
       else {
