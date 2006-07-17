@@ -41,7 +41,9 @@ function search404_page() {
     $q = $_REQUEST['destination'];
     $keys = split('[^A-Za-z0-9]+', $q);
     $keys = array_diff($keys, $ignore);
-    $keys = trim(implode(' ', $keys));
+    
+    $modifier = variable_get('search404_use_or', false) ? ' OR ' : ' ';
+    $keys = trim(implode($modifier, $keys));
     if ($keys) {
       // Get search results
       $results = module_invoke('node', 'search', 'search', $keys);
@@ -89,6 +91,12 @@ function search404_settings() {
     '#title' => t('Jump directly to the search result when there is only one result.'),
     '#default_value' => variable_get('search404_jump', false),
   );
+
+  $form['search404_use_or'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use OR between keywords when searching.'),
+    '#default_value' => variable_get('search404_use_or', false),
+  );
   
   $form['search404_ignore'] = array(
     '#type' => 'textfield',
@@ -102,6 +110,7 @@ function search404_settings() {
 
 function search404_settings_form_submit($form_id, $form_values) {
   variable_set('search404_jump', $form_values['search404_jump']);
+  variable_set('search404_use_or', $form_values['search404_use_or']);
 
   if ($form_values['search404_enable']) {
     search404_enable();
