@@ -36,7 +36,7 @@ function search404_page() {
   $output = t('<p>The page you requested was not found.</p>');
 
   if (user_access('search content')) {
-    $ignore = array('dump', 'zip', 'avi', 'a');
+    $ignore = explode(' ', variable_get('search404_ignore', 'htm html php'));
     
     $q = $_REQUEST['destination'];
     $keys = split('[^A-Za-z0-9]+', $q);
@@ -63,7 +63,10 @@ function search404_page() {
       }
       // If there are not results, tell the user
       else {
-        $output .= t('<p>A search was performed for &quot;<i>%keys</i>&quot;, but nothing was found.</p>', array('%keys' => $keys));
+        drupal_set_message(t('A search was performed for &quot;<i>%keys</i>&quot;, but nothing was found. Please use the form below to search all of our site content.', array('%keys' => $keys)));
+        // Redirect to the search page to allow the user to perform a different search.
+        $_REQUEST['destination'] = 'search';
+        drupal_goto();
       }
     }
   }
@@ -85,6 +88,13 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#title' => t('Jump directly to the search result when there is only one result.'),
     '#default_value' => variable_get('search404_jump', false),
+  );
+  
+  $form['search404_ignore'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Words to ignore'),
+    '#description' => t('Separate words with a space, e.g.: "htm html php".'),
+    '#default_value' => variable_get('search404_ignore', 'htm html php'),
   );
 
   return $form;
