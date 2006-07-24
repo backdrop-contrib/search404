@@ -111,6 +111,7 @@ function search404_settings() {
 function search404_settings_form_submit($form_id, $form_values) {
   variable_set('search404_jump', $form_values['search404_jump']);
   variable_set('search404_use_or', $form_values['search404_use_or']);
+  variable_set('search404_ignore', $form_values['search404_ignore']);
 
   if ($form_values['search404_enable']) {
     search404_enable();
