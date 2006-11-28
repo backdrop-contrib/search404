@@ -36,44 +36,65 @@ function search404_page() {
   $output = t('<p>The page you requested was not found.</p>');
 
   if (user_access('search content')) {
-    $ignore = explode(' ', variable_get('search404_ignore', 'htm html php'));
-    
-    $q = $_REQUEST['destination'];
-    $keys = split('[^A-Za-z0-9]+', $q);
-    $keys = array_diff($keys, $ignore);
-    
-    $modifier = variable_get('search404_use_or', false) ? ' OR ' : ' ';
-    $keys = trim(implode($modifier, $keys));
-    if ($keys) {
-      // Get search results
-      $results = module_invoke('node', 'search', 'search', $keys);
+    list($keys, $results) = search404_results();
 
+    if ($keys) {
       if (isset($results) && is_array($results) && count($results)) {
         // First, check to see if there is exactly 1 result
         if (variable_get('search404_jump', false) && count($results) == 1) {
           drupal_set_message(t('The page you requested does not exist. A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
-          // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
-          $_REQUEST['destination'] = 'node/' . $results[0]['node']->nid;
-          drupal_goto();
+          search404_goto('node/' . $results[0]['node']->nid);
         }
 
         // Otherwise, redirect to a search page
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;.', array('%keys' => $keys)));
-        // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
-        $_REQUEST['destination'] = 'search/node/' . $keys;
-        drupal_goto();
+        search404_goto('search/node/' . $keys);
       }
-      // If there are not results, tell the user
+      // If there are no results, tell the user
       else {
         drupal_set_message(t('A search was performed for &quot;<i>%keys</i>&quot;, but nothing was found. Please use the form below to search all of our site content.', array('%keys' => $keys)));
         // Redirect to the search page to allow the user to perform a different search.
-        $_REQUEST['destination'] = 'search';
-        drupal_goto();
+        search404_goto('search');
       }
     }
   }
 
   return $output;
+}
+
+function search404_results() {
+  // Search engine
+  $query = search404_search_engine_query();
+  if ($query) {
+    $results = search404_search_results($query);
+    if (isset($results) && is_array($results) && count($results)) {
+      return array($query, $results);
+    }
+  }
+  
+  // URL keywords
+  $query = search404_url_query();
+  if ($query) {
+    $results = search404_search_results($query);
+    return array($query, $results);
+  }
+
+  return array(null, null);
+}
+
+/**
+ * Get search results for a query
+ */
+function search404_search_results($query) {
+  return module_invoke('node', 'search', 'search', $query);
+}
+
+/**
+ * Overwrites $_REQUEST['destination'] because it is set by drupal_not_found()
+ */
+function search404_goto($url) {
+  $_REQUEST['destination'] = $url;
+  drupal_goto();
 }
 
 /**
@@ -108,6 +129,9 @@ function search404_settings() {
   return $form;
 }
 
+/**
+ * Save settings and enable/disable the module
+ */
 function search404_settings_form_submit($form_id, $form_values) {
   variable_set('search404_jump', $form_values['search404_jump']);
   variable_set('search404_use_or', $form_values['search404_use_or']);
@@ -121,6 +145,9 @@ function search404_settings_form_submit($form_id, $form_values) {
   }
 }
 
+/**
+ * Enable Search 404
+ */
 function search404_enable() {
   if (!search404_is_enabled()) {
     variable_set('previous_site_404', variable_get('site_404', ''));
@@ -129,6 +156,9 @@ function search404_enable() {
   }
 }
 
+/**
+ * Disable Search 404 and restore the former 404-page
+ */
 function search404_disable() {
   if (search404_is_enabled()) {
     variable_set('site_404', variable_get('previous_site_404', ''));
@@ -136,8 +166,76 @@ function search404_disable() {
   }
 }
 
+/**
+ * Determines whether Search 404 is enabled or not
+ */
 function search404_is_enabled() {
   return (variable_get('site_404', '') == 'search404');
 }
 
-?>
+/**
+ * Returns search-query from URL
+ */
+function search404_url_query() {
+  $ignore = explode(' ', variable_get('search404_ignore', 'htm html php'));
+  
+  $q = $_REQUEST['destination'];
+  $keys = split('[^A-Za-z0-9]+', $q);
+  $keys = array_diff($keys, $ignore);
+    
+  $modifier = variable_get('search404_use_or', false) ? ' OR ' : ' ';
+  $query = trim(implode($modifier, $keys));
+
+  return $query;
+}
+
+/**
+ * Detect search from search engine
+ */
+function search404_search_engine_query() {
+  $referrer = $_SERVER['HTTP_REFERER'];
+  $engines = search404_search_engine_list();
+  $parsed_url = parse_url($referrer);
+
+  if ($parsed_url === false) {
+    return '';
+  }
+
+  $remote_host = $parsed_url['host'];
+  $query_string = $parsed_url['query'];
+
+  if (!strlen($query_string) > 0) {
+    return '';
+  }
+
+  parse_str($query_string, $query);
+  
+  foreach ($engines as $host => $key) {
+    if (strpos($remote_host, $host) === false) {
+      continue;
+    }
+    if (array_key_exists($key, $query)) {
+      return trim($query[$key]);
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * List of search engines, used by search404_search_engine_detection()
+ */
+function search404_search_engine_list() {
+  // Format: '<domain-match>' => '<name of query-string key containing search>'
+  $engines = array(
+    'altavista' => 'q',
+    'aol' => 'query',
+    'google' => 'q',
+    'live' => 'q',
+    'lycos' => 'query',
+    'msn' => 'q',
+    'yahoo' => 'p',
+  );
+  
+  return $engines;
+}
