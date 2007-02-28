@@ -1,8 +1,21 @@
 <?php
-
+/* $ID$ */
 /**
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
 function search404_install() {
-  search404_enable();
+    if (variable_get('site_404', '') == 'search404') {
+      variable_set('previous_site_404', variable_get('site_404', ''));
+      variable_set('site_404', 'search404');
+    }
+}
+
+function search404_uninstall() {
+  if (variable_get('site_404', '') == 'search404') {
+    variable_set('site_404', variable_get('previous_site_404', ''));
+  }
+  variable_del('previous_site_404');
+  variable_del('search404_jump');
+  variable_del('search404_use_or');
+  variable_del('search404_ignore');
 }

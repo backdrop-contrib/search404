@@ -1,0 +1,4 @@
+; $Id$
+name = Search 404
+description = Search 404
+dependencies = search
