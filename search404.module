@@ -16,7 +16,8 @@ function search404_menu() {
     'description' => t('Administer search 404.'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('search404_settings'),
-    'access' => user_access('administer site configuration'),
+		'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
   );
   return $items;
@@ -124,14 +125,14 @@ function search404_page() {
       }
       else {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        if (isset($results) && is_array($results) && count($results) > 0) {
+        if (isset($results) && is_array($results) && count($results) > 0) {drupal_set_message('Inside Else1');
           drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
           // EVIL HAXX!
             $oldgetq = $_GET['q'];
             $olddestination = $_REQUEST['destination'];
             unset($_REQUEST['destination']);
             $_GET['q'] = "search/node/$keys";
-            $results = theme('search_page', $results, 'node');
+            $results = theme('search_results', $results, 'node');
             $_GET['q'] = $oldgetq;
             $_REQUEST['destination'] = $olddestination;
           // END OF EVIL HAXX!
@@ -166,7 +167,8 @@ function search404_settings() {
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
-    '#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are doing."),
+    '#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are
+		doing."),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
