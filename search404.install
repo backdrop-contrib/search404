@@ -1,5 +1,11 @@
 <?php
-//* $Id$
+// $Id$
+
+/*
+ * @file
+ * search404 Module install file
+ */
+
 /**
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
