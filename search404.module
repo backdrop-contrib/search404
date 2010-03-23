@@ -41,7 +41,8 @@ function search404_get_keys() {
   // Abort query on certain extensions, e.g: gif jpg jpeg png
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
   $extensions = trim(implode('|', $extensions));
-  $keys = $_REQUEST['q'];
+  
+  $keys = $_GET['destination'];
   if (!empty($extensions) && preg_match("/\.($extensions)$/", $keys)) {
     return FALSE;
   }
@@ -123,7 +124,7 @@ function search404_page() {
         drupal_goto('search/google/' . $keys);
       }
       else {
-        $results = module_invoke($type_search, 'search', 'search', $keys);
+        $results = search_data($keys, $type_search);
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
           // First, check to see if there is exactly 1 result
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
@@ -139,27 +140,17 @@ function search404_page() {
         }
         else {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-          if (isset($results) && is_array($results) && count($results) > 0) {
+          if (isset($results)) {
             drupal_add_css(drupal_get_path('module', 'search') . '/search.css', 'module', 'all', FALSE);
-            // EVIL HAXX!
-              $oldgetq = $_GET['q'];
-              $olddestination = $_REQUEST['q'];
-              unset($_REQUEST['q']);
-              $_GET['q'] = "search/$type_search/$keys";
-              $results = theme('search_results', $results, 'node');
-              $_GET['q'] = $oldgetq;
-              $_REQUEST['destination'] = $olddestination;
-            // END OF EVIL HAXX!
           }
           else {
             $results = search_help('search#noresults', drupal_help_arg());
           }
-          $results = theme('search_results_listing', t('Search results'), $results);
         }
       }
     }
     // Construct the search form.
-    $output = drupal_render(drupal_get_form('search_form', NULL, $keys, $type_search)) . $results;
+    $output = drupal_render(drupal_get_form('search_form', NULL, empty($keys) ? '' : $keys, 'node')) . $results;
   }
 
   return $output;
