@@ -19,7 +19,7 @@ function search404_menu() {
     'type' => MENU_LOCAL_TASK
   );
 
-  $items['admin/settings/search404'] = array(
+  $items['admin/config/search/search404'] = array(
     'title' => 'Search 404 settings',
     'description' => 'Administer search 404.',
     'page callback' => 'drupal_get_form',
