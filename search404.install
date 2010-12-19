@@ -19,7 +19,6 @@ function search404_uninstall() {
     variable_del('site_404');
   }
   variable_del('search404_redirect_301');
-  variable_del('search404_block_show');
   variable_del('search404_do_google_cse');
   variable_del('search404_do_search_by_page');
   variable_del('search404_first');

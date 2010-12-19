@@ -200,13 +200,6 @@ function search404_settings() {
     '#title' => t('Jump directly to the first search result even when there are multiple results.'),
     '#default_value' => variable_get('search404_first', FALSE),
   );
-  // Added for displaying blocks for 404 searches.
-  $form['search404_block_show'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show left and right sidebars in page when a 404 search occurs'),
-    '#default_value' => variable_get('search404_block_show', FALSE),
-  );
-
   $form['search404_do_google_cse'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 Occurs'),
@@ -214,7 +207,6 @@ function search404_settings() {
     '#attributes' => module_exists('google') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_google_cse', FALSE),
   );
-
   $form['search404_do_search_by_page'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a "Search by page" Search instead of a Drupal Search when a 404 Occurs'),
@@ -222,14 +214,12 @@ function search404_settings() {
     '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
   );
-
   // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a redirect 301 instead of redirect 302'),
     '#default_value' => variable_get('search404_redirect_301', FALSE),
   );
-
   // Added for preventing automatic search for large sites.
   $form['search404_skip_auto_search'] = array(
     '#title' => t('Disable auto search'),
@@ -237,7 +227,6 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#default_value' => variable_get('search404_skip_auto_search', FALSE),
   );
-
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
@@ -279,21 +268,18 @@ function search404_settings() {
     '#description' => t('This regular expression will be applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search. You do NOT have to enclose the regex in forward slashes when defining the PCRE. e.g.: use "[foo]bar" instead of "/[foo]bar/". On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex', ''),
   );
-
   $form['advanced']['search404_page_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Custom Page Title'),
     '#description' => t('You can enter a value that will displayed at the title of the Webpage e.g. "Page not found"'),
     '#default_value' => variable_get('search404_page_title', 'Page not found'),
   );
-
   $form['advanced']['search404_page_text'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom Page Text'),
     '#default_value' => variable_get('search404_page_text', ''),
     '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used'),
   );
-
   // Helps reset the site_404 variable to search404 in case the user changes it manually.
   $form['site_404'] = array(
     '#type' => 'hidden',
