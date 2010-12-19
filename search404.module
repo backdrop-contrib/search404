@@ -112,7 +112,7 @@ function search404_search_engine_query() {
  * Updated to be more similar to search_view
  */
 function search404_page() {
-  $output = t('The page you requested does not exist.');
+  $output = '';
   drupal_set_title(t(variable_get('search404_page_title', 'Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $keys = "";
@@ -162,6 +162,10 @@ function search404_page() {
     // Construct the search form.
     $output = drupal_render(drupal_get_form('search_form', NULL, empty($keys) ? '' : $keys, 'node')) . $results;
   }
+  // If the user does not have search permissions $output would be empty.
+  if ($output == '') {
+    $output = t('The page you requested does not exist.');
+  }  
   return $output;
 }
 
