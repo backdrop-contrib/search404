@@ -41,7 +41,7 @@ function search404_menu() {
 function search404_get_keys() {
   global $language;
 
-  $keys = $_REQUEST['destination'] ? $_REQUEST['destination'] : $_REQUEST['q'];
+  $keys = $_GET['destination'];
 
   // Abort query on certain extensions, e.g: gif jpg jpeg png
   $extensions = explode(' ', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
@@ -49,10 +49,12 @@ function search404_get_keys() {
   if (!empty($extensions) && preg_match("/\.($extensions)$/i", $keys)) {
     return FALSE;
   }
+  /* TODO - How does this work in D7
   //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
   if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
     $keys = preg_replace("/^" . $language->language . "\//i", '', $keys);
   }
+  */
   $regex_filter = variable_get('search404_regex', '');
   $keys_array[] = $keys;
   if (!empty($regex_filter)) {
