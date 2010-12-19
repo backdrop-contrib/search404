@@ -1,7 +1,7 @@
 ; $Id$
 
-name = Search 404
-description = Search 404
+name = "Search 404"
+description = "Automatically search for the keywords in URLs that result in 404 errors and show results instead of Page-Not-Found. "
 dependencies[] = 'search'
 core = 7.x
 
