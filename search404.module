@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function search404_menu() {
   $items = array();
@@ -35,7 +35,7 @@ function search404_menu() {
 /**
  * Replacement for search_get_keys
  * This function can potentially return dangerous
- * potential SQL inject/XSS data. 
+ * potential SQL inject/XSS data.
  * Return must be sanatized before use.
  */
 function search404_get_keys() {
@@ -51,12 +51,12 @@ function search404_get_keys() {
   }
   //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
   if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
-    $keys = preg_replace("/^". $language->language ."\//i", '', $keys);
+    $keys = preg_replace("/^" . $language->language . "\//i", '', $keys);
   }
   $regex_filter = variable_get('search404_regex', '');
   $keys_array[] = $keys;
   if (!empty($regex_filter)) {
-    $keys = preg_replace("/". $regex_filter ."/i", '', $keys);
+    $keys = preg_replace("/" . $regex_filter . "/i", '', $keys);
   }
   // Ignore certain extensions from query.
   $extensions = explode(' ', variable_get('search404_ignore_extensions', 'htm html php'));
@@ -65,7 +65,7 @@ function search404_get_keys() {
     $keys = preg_replace("/\.($extensions)$/i", '', $keys);
   }
 
-  $keys = preg_split('/['. PREG_CLASS_UNICODE_WORD_BOUNDARY .']+/u', $keys);
+  $keys = preg_split('/[' . PREG_CLASS_UNICODE_WORD_BOUNDARY . ']+/u', $keys);
 
   // Ignore certain words (use case insensitive search).
   $keys = array_udiff($keys, explode(' ', variable_get('search404_ignore', 'and or the')), 'strcasecmp');
@@ -131,22 +131,22 @@ function search404_page() {
     if ($keys && !$throttle && !variable_get('search404_skip_auto_search', FALSE)) {
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        search404_goto('search_pages/'. $keys);
+        search404_goto('search_pages/' . $keys);
       }
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        search404_goto('search/google/'. $keys);
+        search404_goto('search/google/' . $keys);
       }
       else {
         $results = search_data($keys, $type_search);
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
           // First, check to see if there is exactly 1 result.
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          search404_goto('node/'. $results[0]['node']->nid);
+          search404_goto('node/' . $results[0]['node']->nid);
         }
         elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          search404_goto('node/'. $results[0]['node']->nid);
+          search404_goto('node/' . $results[0]['node']->nid);
         }
         else {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
@@ -165,7 +165,7 @@ function search404_page() {
   // If the user does not have search permissions $output would be empty.
   if ($output == '') {
     $output = t('The page you requested does not exist.');
-  }  
+  }
   return $output;
 }
 
