@@ -21,7 +21,7 @@ function search404_menu() {
 
   $items['admin/config/search/search404'] = array(
     'title' => 'Search 404 settings',
-    'description' => 'Administer search 404.',
+    'description' => 'Configure searching for keywords from URLs that result in 404 errors.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('search404_settings'),
     'access callback' => 'user_access',
