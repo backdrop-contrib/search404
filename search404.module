@@ -65,7 +65,7 @@ function search404_get_keys() {
     $keys = preg_replace("/\.($extensions)$/i", '', $keys);
   }
 
-  $keys = preg_split('/['. PREG_CLASS_SEARCH_EXCLUDE .']+/u', $keys);
+  $keys = preg_split('/['. PREG_CLASS_UNICODE_WORD_BOUNDARY .']+/u', $keys);
 
   // Ignore certain words (use case insensitive search).
   $keys = array_udiff($keys, explode(' ', variable_get('search404_ignore', 'and or the')), 'strcasecmp');
