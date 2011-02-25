@@ -1,5 +1,4 @@
 <?php
-//* $Id$
 /**
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
