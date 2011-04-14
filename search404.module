@@ -74,15 +74,18 @@ function search404_search_engine_query() {
     'msn' => 'q',
     'yahoo' => 'p',
   );
-  $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
-  $remote_host = $parsed_url['host'];
-  $query_string = $parsed_url['query'];
-  parse_str($query_string, $query);
 
-  if (!$parsed_url === false && !empty($remote_host) && !empty($query_string) && count($query)) {
-    foreach ($engines as $host => $key) {
-      if (strpos($remote_host, $host) !== false && array_key_exists($key, $query)) {
-        return trim($query[$key]);
+  // Try to extract searchengine querystring only if HTTP_REFERER was set (#1111918)
+  if (isset($_SERVER['HTTP_REFERER'])) {
+    $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
+    $remote_host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+    $query_string = isset($parsed_url['query']) ? $parsed_url['query'] : '';
+    parse_str($query_string, $query);
+    if (!$parsed_url === FALSE && !empty($remote_host) && !empty($query_string) && count($query)) {
+      foreach ($engines as $host => $key) {
+        if (strpos($remote_host, $host) !== FALSE && array_key_exists($key, $query)) {
+          return trim($query[$key]);
+        }
       }
     }
   }
