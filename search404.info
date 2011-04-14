@@ -1,13 +1,12 @@
-name = Search 404
-description = Search 404
-package = Other
-dependencies[] = search
-version = VERSION
-core = 6.x
+; $Id: search404.info,v 1.4.2.3 2010/12/19 20:17:30 zyxware Exp $
 
-; Information added by drupal.org packaging script on 2008-03-06
-version = "6.x-1.0"
-core = "6.x"
-project = "search404"
-datestamp = "1204797914"
+name = "Search 404"
+description = "Automatically search for the keywords in URLs that result in 404 errors and show results instead of Page-Not-Found. "
+dependencies[] = 'search'
+core = 7.x
+
+files[] = search404.module
+files[] = search404.install
+
+configure = admin/config/search/search404
 
