@@ -1,7 +1,6 @@
 <?php
-// $Id: search404.module,v 1.16.2.12 2010/12/19 21:27:27 zyxware Exp $
-
-/* @file
+/* *
+ * @file
  * The search404 module files, does all the searching
  * when a 404 occurs
  */
