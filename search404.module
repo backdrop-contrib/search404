@@ -140,18 +140,18 @@ function search404_page() {
       }
       else {
         $results = search_data($keys, $type_search);
-        if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
+        if (isset($results['#results']) && is_array($results['#results']) && count($results['#results']) == 1 && variable_get('search404_jump', FALSE)) {
           // First, check to see if there is exactly 1 result.
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          search404_goto('node/' . $results[0]['node']->nid);
+          search404_goto('node/' . $results['#results'][0]['node']->nid);
         }
-        elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', FALSE)) {
+        elseif (isset($results['#results']) && is_array($results['#results']) && count($results['#results']) >= 1 && variable_get('search404_first', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          search404_goto('node/' . $results[0]['node']->nid);
+          search404_goto('node/' . $results['#results'][0]['node']->nid);
         }
         else {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-          if (isset($results)) {
+          if (isset($results['#results']) && count($results['#results']) >= 1) {
             drupal_add_css(drupal_get_path('module', 'search') . '/search.css', 'module', 'all', FALSE);
           }
           else {
