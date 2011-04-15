@@ -104,7 +104,7 @@ function search404_search_engine_query() {
     }
   }
 
-  return FALSE;
+  return '';
 }
 
 /**
@@ -116,8 +116,8 @@ function search404_page() {
   $output = '';
   drupal_set_title(t(variable_get('search404_page_title', 'Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
-    $keys = "";
-    $results = "";
+    $keys = '';
+    $results = '';
     // If apachesolr_search or luceneapi is installed use them instead default node search.
     $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : 'node');
     if (variable_get('search404_use_search_engine', FALSE)) {
@@ -161,7 +161,7 @@ function search404_page() {
       }
     }
     // Construct the search form.
-    $form = drupal_get_form('search_form', NULL, empty($keys) ? '' : $keys, 'node');
+    $form = drupal_get_form('search_form', NULL, $keys, 'node');
     $output = drupal_render($form) . drupal_render($results);
   }
   // If the user does not have search permissions $output would be empty.
