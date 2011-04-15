@@ -178,7 +178,7 @@ function search404_goto($path = '') {
   $_REQUEST['destination'] = $path;
   // Set 301 redirect if so specified in settings else do default 302 redirect.
   if (variable_get('search404_redirect_301', FALSE)) {
-    drupal_goto($path, NULL, NULL, 301);
+    drupal_goto($path, array(), 301);
   }
   else {
     drupal_goto($path);
