@@ -161,7 +161,8 @@ function search404_page() {
       }
     }
     // Construct the search form.
-    $output = drupal_render(drupal_get_form('search_form', NULL, empty($keys) ? '' : $keys, 'node')) . drupal_render($results);
+    $form = drupal_get_form('search_form', NULL, empty($keys) ? '' : $keys, 'node');
+    $output = drupal_render($form) . drupal_render($results);
   }
   // If the user does not have search permissions $output would be empty.
   if ($output == '') {
