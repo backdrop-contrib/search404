@@ -92,8 +92,8 @@ function search404_search_engine_query() {
     'yahoo' => 'p',
   );
   $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
-  $remote_host = $parsed_url['host'];
-  $query_string = $parsed_url['query'];
+  $remote_host = !empty($parsed_url['host']) ? $parsed_url['host'] : '';
+  $query_string = !empty($parsed_url['query']) ? $parsed_url['query'] : '';
   parse_str($query_string, $query);
 
   if (!$parsed_url === FALSE && !empty($remote_host) && !empty($query_string) && count($query)) {
