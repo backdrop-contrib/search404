@@ -114,7 +114,7 @@ function search404_search_engine_query() {
  */
 function search404_page() {
   $output = '';
-  drupal_set_title(t(variable_get('search404_page_title', 'Page not found')));
+  drupal_set_title(variable_get('search404_page_title', t('Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $keys = '';
     $results = '';
