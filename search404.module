@@ -179,6 +179,11 @@ function search404_page() {
     // Construct the search form.
     $form = drupal_get_form('search_form', NULL, $keys, 'node');
     $output = drupal_render($form) . drupal_render($results);
+    // Add custom text before the search form and results if custom text has been set
+    $search404_page_text = variable_get('search404_page_text', '');
+    if (!empty($search404_page_text)) {
+      $output = '<div id="search404-page-text">' . $search404_page_text . '</div>' . $output;
+    }
   }
   // If the user does not have search permissions $output would be empty.
   if ($output == '') {
