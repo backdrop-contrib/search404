@@ -222,7 +222,7 @@ function search404_settings() {
   // than Core, Apache Solr, Lucene and Xapian. Can this even be done? Meta refresh?
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Use a redirect 301 instead of redirect 302'),
+    '#title' => t('Use a 301 Redirect instead of 302 Redirect'),
     '#description' => t('This applies when the option to jump to first result is enabled and also for search404 results pages other than for Core, Apache Solr, Lucene and Xapian.'),
     '#default_value' => variable_get('search404_redirect_301', FALSE),
   );
