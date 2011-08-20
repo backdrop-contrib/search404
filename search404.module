@@ -200,7 +200,7 @@ function search404_goto($path = '') {
   else {
     $http_status = 302;
   }
-  drupal_goto($path, NULL, NULL, $http_status);
+  drupal_goto($path, array(), $http_status);
 }
 
 /**
