@@ -233,6 +233,13 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#default_value' => variable_get('search404_skip_auto_search', FALSE),
   );
+  // Disable the drupal error message when showing search results.
+  $form['search404_disable_error_message'] = array(
+    '#title' => t('Disable error message'),
+    '#type' => 'checkbox',
+    '#description' => t('Disable the Drupal error message when search results are shown on a 404 page.'),
+    '#default_value' => variable_get('search404_disable_error_message', FALSE),
+  );
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
