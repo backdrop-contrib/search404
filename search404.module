@@ -32,15 +32,24 @@ function search404_menu() {
 }
 
 /**
- * Replacement for search_get_keys
- * This function can potentially return dangerous
- * potential SQL inject/XSS data.
- * Return must be sanatized before use.
+ * Get the keys that are to be used for the search based either
+ * on the keywords from the URL or from the keys from the search
+ * that resulted in the 404
  */
 function search404_get_keys() {
   global $language;
 
-  $keys = $_GET['destination'];
+  $keys = '';
+  // Try to get keywords from the search result (if it was one)
+  // that resulted in the 404 if the config is set.
+  if (variable_get('search404_use_search_engine', FALSE)) {
+    $keys = search404_search_engine_query();
+  }
+  // If keys are not yet populated from a search engine referer
+  // use keys from the path that resulted in the 404.
+  if (!$keys) {
+    $keys = $_GET['destination'];
+  }
 
   // Abort query on certain extensions, e.g: gif jpg jpeg png
   $extensions = explode(' ', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
@@ -116,17 +125,11 @@ function search404_page() {
   $output = '';
   drupal_set_title(variable_get('search404_page_title', t('Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
-    $keys = '';
     $results = '';
     // If apachesolr_search or luceneapi or xapian is installed use them instead default node search.
     $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : ((module_exists('xapian')) ? 'xapian' : 'node'));
 
-    if (variable_get('search404_use_search_engine', FALSE)) {
-      $keys = search404_search_engine_query();
-    }
-    if (!$keys) {
-      $keys = search404_get_keys();
-    }
+    $keys = search404_get_keys();
     // Get throttle status
     $throttle = module_invoke('throttle', 'status');
     // If search keys are present and site is not throttled and automatic searching is not disabled.
