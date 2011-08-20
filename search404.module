@@ -194,11 +194,13 @@ function search404_settings() {
   $form['search404_jump'] = array(
     '#type' => 'checkbox',
     '#title' => t('Jump directly to the search result when there is only one result'),
+    '#description' => t('Works only with Core, Apache Solr, Lucene and Xapian searches. An HTTP status of 301 or 302 will be returned for this redirect.'),
     '#default_value' => variable_get('search404_jump', FALSE),
   );
   $form['search404_first'] = array(
     '#type' => 'checkbox',
     '#title' => t('Jump directly to the first search result even when there are multiple results'),
+    '#description' => t('Works only with Core, Apache Solr, Lucene and Xapian searches. An HTTP status of 301 or 302 will be returned for this redirect.'),
     '#default_value' => variable_get('search404_first', FALSE),
   );
   $form['search404_do_google_cse'] = array(
@@ -216,9 +218,12 @@ function search404_settings() {
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
   );
   // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
+  // TODO: jump to search pages should still return 404 and not 301 or 302 for searches other
+  // than Core, Apache Solr, Lucene and Xapian. Can this even be done? Meta refresh?
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a redirect 301 instead of redirect 302'),
+    '#description' => t('This applies when the option to jump to first result is enabled and also for search404 results pages other than for Core, Apache Solr, Lucene and Xapian.'),
     '#default_value' => variable_get('search404_redirect_301', FALSE),
   );
   // Added for preventing automatic search for large sites.
