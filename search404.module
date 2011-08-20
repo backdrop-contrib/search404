@@ -269,12 +269,14 @@ function search404_settings() {
     '#description' => t('This regular expression will be applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search. You do NOT have to enclose the regex in forward slashes when defining the PCRE. e.g.: use "[foo]bar" instead of "/[foo]bar/". On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex', ''),
   );
+  // Show custom title for the 404 search results page.
   $form['advanced']['search404_page_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Custom page title'),
     '#description' => t('You can enter a value that will displayed at the title of the webpage e.g. "Page not found".'),
     '#default_value' => variable_get('search404_page_title', t('Page not found')),
   );
+  // Show custom text below the search form for the 404 search results page.
   $form['advanced']['search404_page_text'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom page text'),
