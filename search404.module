@@ -118,8 +118,9 @@ function search404_page() {
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $keys = '';
     $results = '';
-    // If apachesolr_search or luceneapi is installed use them instead default node search.
-    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : 'node');
+    // If apachesolr_search or luceneapi or xapian is installed use them instead default node search.
+    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : ((module_exists('xapian')) ? 'xapian' : 'node'));
+
     if (variable_get('search404_use_search_engine', FALSE)) {
       $keys = search404_search_engine_query();
     }
@@ -131,26 +132,41 @@ function search404_page() {
     // If search keys are present and site is not throttled and automatic searching is not disabled.
     if ($keys && !$throttle && !variable_get('search404_skip_auto_search', FALSE)) {
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
-        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        // TODO - fix duplication of this logic?
+        if (!variable_get('search404_disable_error_message', FALSE)) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        }
         search404_goto('search_pages/' . $keys);
       }
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
-        drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        if (!variable_get('search404_disable_error_message', FALSE)) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        }
         search404_goto('search/google/' . $keys);
       }
       else {
+        // Called for apache solr, lucene, xapian and core search.
         $results = search_data($keys, $type_search);
+        // First, check to see if there is exactly 1 result and if jump to first
+        // is selected then jump to it.
         if (isset($results['#results']) && is_array($results['#results']) && count($results['#results']) == 1 && variable_get('search404_jump', FALSE)) {
-          // First, check to see if there is exactly 1 result.
-          drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          }
           search404_goto('node/' . $results['#results'][0]['node']->nid);
         }
+        // Even if there is more than one result and the force jump to first result is
+        // selected, go ahead and jump to first result.
         elseif (isset($results['#results']) && is_array($results['#results']) && count($results['#results']) >= 1 && variable_get('search404_first', FALSE)) {
-          drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          }
           search404_goto('node/' . $results['#results'][0]['node']->nid);
         }
         else {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          }
           if (isset($results['#results']) && count($results['#results']) >= 1) {
             drupal_add_css(drupal_get_path('module', 'search') . '/search.css', 'module', 'all', FALSE);
           }
