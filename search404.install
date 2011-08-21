@@ -1,7 +1,7 @@
 <?php
-/* * 
+/**
  * @file
- * search404 Module install file
+ * Install, update and uninstall functions for the search404 module.
  */
 
 /**
