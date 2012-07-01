@@ -179,8 +179,15 @@ function search404_page() {
         }
       }
     }
+    // If using Google CSE without automatic searching, set it as the search module.
+    if (module_exists('google_cse') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
+      $module = 'google_cse';
+    }
+    else {
+      $module = 'node';
+    }
     // Construct the search form.
-    $form = drupal_get_form('search_form', NULL, $keys, 'node');
+    $form = drupal_get_form('search_form', NULL, $keys, $module);
     $output = drupal_render($form) . drupal_render($results);
     // Add custom text before the search form and results if custom text has been set
     $search404_page_text = variable_get('search404_page_text', '');
