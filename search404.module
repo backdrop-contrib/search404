@@ -159,7 +159,7 @@ function search404_page() {
         // Called for apache solr, lucene, xapian and core search.
         $results = search_data($keys, $type_search);
         // Apache Solr puts the results in $results['search_results'].
-        if (!empty($results['search_results'])) {
+        if (isset($results['search_results'])) {
           $results = $results['search_results'];
         }
         // Jump to first result if there are results and
