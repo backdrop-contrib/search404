@@ -158,21 +158,29 @@ function search404_page() {
       else {
         // Called for apache solr, lucene, xapian and core search.
         $results = search_data($keys, $type_search);
-        // First, check to see if there is exactly 1 result and if jump to first
-        // is selected then jump to it.
-        if (isset($results['#results']) && is_array($results['#results']) && count($results['#results']) == 1 && variable_get('search404_jump', FALSE)) {
-          if (!variable_get('search404_disable_error_message', FALSE)) {
-            drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          }
-          search404_goto('node/' . $results['#results'][0]['node']->nid);
+        // Apache Solr puts the results in $results['search_results'].
+        if (!empty($results['search_results'])) {
+          $results = $results['search_results'];
         }
-        // Even if there is more than one result and the force jump to first result is
-        // selected, go ahead and jump to first result.
-        elseif (isset($results['#results']) && is_array($results['#results']) && count($results['#results']) >= 1 && variable_get('search404_first', FALSE)) {
+        // Jump to first result if there are results and
+        // if there is only one result and if jump to first is selected or 
+        // if there are more than one results and force jump to first is selected.
+        if (isset($results['#results']) && is_array($results['#results']) && 
+          (
+            (count($results['#results']) == 1 && variable_get('search404_jump', FALSE)) 
+            || (count($results['#results']) >= 1 && variable_get('search404_first', FALSE))
+          )
+        ) {
           if (!variable_get('search404_disable_error_message', FALSE)) {
             drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           }
-          search404_goto('node/' . $results['#results'][0]['node']->nid);
+          if (isset($results['#results'][0]['node']->path)) {
+            $result_path = $results['#results'][0]['node']->path;
+          } 
+          else {
+            $result_path = 'node/' . $results['#results'][0]['node']->nid;
+          }
+          search404_goto($result_path);
         }
         else {
           if (!variable_get('search404_disable_error_message', FALSE)) {
