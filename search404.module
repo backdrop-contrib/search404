@@ -147,6 +147,14 @@ function search404_page() {
         }
         search404_goto('search/google/' . $keys);
       }
+      elseif (variable_get('search404_do_custom_search', FALSE)) {
+        if (!variable_get('search404_disable_error_message', FALSE)) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        }
+        $custom_search_path = variable_get('search404_custom_search_path', 'search/@keys');
+        $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
+        search404_goto($custom_search_path);
+      }
       else {
         // Called for apache solr, lucene, xapian and core search.
         $results = search_data($keys, $type_search);
@@ -247,6 +255,19 @@ function search404_settings() {
     '#description' => t('Requires "Search by page" module to be enabled.'),
     '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
+  );
+  // Custom search path implementation (for Search API integration #1076190) 
+  $form['search404_do_custom_search'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Do a "Search" with custom path instead of a Drupal Search when a 404 occurs'),
+    '#description' => t('Redirect the user to a Custom search path to be entered below. Can be used to open a view with path parameter.'),
+    '#default_value' => variable_get('search404_do_custom_search', FALSE),
+  );
+  $form['search404_custom_search_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Custom search path'),
+    '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
+    '#default_value' => variable_get('search404_custom_search_path', 'search/@keys'),
   );
   // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
   // TODO: jump to search pages should still return 404 and not 301 or 302 for searches other
