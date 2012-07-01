@@ -126,8 +126,10 @@ function search404_page() {
   drupal_set_title(variable_get('search404_page_title', t('Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $results = '';
-    // If apachesolr_search or luceneapi or xapian is installed use them instead default node search.
-    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : ((module_exists('xapian')) ? 'xapian' : 'node'));
+    
+    // Get and use the default search engine for the site.
+    $default_search = search_get_default_module_info();
+    $type_search = $default_search['module'];
 
     $keys = search404_get_keys();
     // Get throttle status
