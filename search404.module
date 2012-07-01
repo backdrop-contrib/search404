@@ -195,15 +195,19 @@ function search404_page() {
         }
       }
     }
-    // If using Google CSE without automatic searching, set it as the search module.
-    if (module_exists('google_cse') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
-      $module = 'google_cse';
+    // Construct the search form.
+    if ($type_search == 'apachesolr_search') {
+      // Get Apachesolr search form
+      module_load_include('inc', 'apachesolr_search', 'apachesolr_search.pages');
+      $search_page = apachesolr_search_page_load('core_search');
+      $form = drupal_get_form('apachesolr_search_custom_page_search_form', $search_page, $keys);
+      // Set the action to point to the search page, otherwise form will submit to current 404 page
+      $form['#action'] = '/' . $form['#search_page']->search_path . $form['#action'];
     }
     else {
-      $module = 'node';
+      // Get the default search form
+      $form = drupal_get_form('search_form', NULL, $keys, $type_search);
     }
-    // Construct the search form.
-    $form = drupal_get_form('search_form', NULL, $keys, $module);
     $output = drupal_render($form) . drupal_render($results);
     // Add custom text before the search form and results if custom text has been set
     $search404_page_text = variable_get('search404_page_text', '');
