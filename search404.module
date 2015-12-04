@@ -1,4 +1,5 @@
 <?php
+
 /* *
  * @file
  * The search404 module file, does all the searching
@@ -58,11 +59,11 @@ function search404_get_keys() {
     return FALSE;
   }
   /* TODO - How does this work in D7
-  //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
-  if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
+    //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
+    if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
     $keys = preg_replace("/^" . $language->language . "\//i", '', $keys);
-  }
-  */
+    }
+   */
   $regex_filter = variable_get('search404_regex', '');
   $keys_array[] = $keys;
   if (!empty($regex_filter)) {
@@ -174,7 +175,7 @@ function search404_page() {
             (
               (count($results['#results']) == 1 && variable_get('search404_jump', FALSE))
               || (count($results['#results']) >= 1 && variable_get('search404_first', FALSE))
-            )
+              )
           ) {
             if (!variable_get('search404_disable_error_message', FALSE)) {
               drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
@@ -269,14 +270,14 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 occurs'),
     '#description' => t('Requires Google CSE and Google CSE Search modules to be enabled.'),
-    '#attributes' => module_exists('google_cse') ? array()  : array('disabled' => 'disabled'),
+    '#attributes' => module_exists('google_cse') ? array() : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_google_cse', FALSE),
   );
   $form['search404_do_search_by_page'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a "Search by page" Search instead of a Drupal Search when a 404 occurs'),
     '#description' => t('Requires "Search by page" module to be enabled.'),
-    '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
+    '#attributes' => module_exists('search_by_page') ? array() : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
   );
   // Custom search path implementation (for Search API integration #1076190)
@@ -385,4 +386,3 @@ function search404_settings() {
 
   return system_settings_form($form);
 }
-
