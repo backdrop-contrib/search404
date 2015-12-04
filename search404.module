@@ -14,6 +14,7 @@ function search404_menu() {
 
   $items['search404'] = array(
     'title' => 'Page not found',
+    /* This page should be visible by all users */
     'access callback' => TRUE,
     'page callback' => 'search404_page',
     'type' => MENU_LOCAL_TASK
@@ -38,7 +39,6 @@ function search404_menu() {
  * that resulted in the 404
  */
 function search404_get_keys() {
-  global $language;
 
   $keys = '';
   // Try to get keywords from the search result (if it was one)
@@ -65,7 +65,6 @@ function search404_get_keys() {
     }
    */
   $regex_filter = variable_get('search404_regex', '');
-  $keys_array[] = $keys;
   if (!empty($regex_filter)) {
     $keys = preg_replace("/" . $regex_filter . "/i", '', $keys);
   }
@@ -140,19 +139,19 @@ function search404_page() {
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         // TODO - fix duplication of this logic?
         if (!variable_get('search404_disable_error_message', FALSE)) {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => $keys)), 'error');
         }
         search404_goto('search_pages/' . $keys);
       }
       elseif (module_exists('google_cse') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         if (!variable_get('search404_disable_error_message', FALSE)) {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => $keys)), 'error');
         }
         search404_goto('search/google/' . $keys);
       }
       elseif (variable_get('search404_do_custom_search', FALSE)) {
         if (!variable_get('search404_disable_error_message', FALSE)) {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => $keys)), 'error');
         }
         $custom_search_path = variable_get('search404_custom_search_path', 'search/@keys');
         $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
@@ -178,7 +177,7 @@ function search404_page() {
               )
           ) {
             if (!variable_get('search404_disable_error_message', FALSE)) {
-              drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+              drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => $keys)), 'status');
             }
             if (isset($results['#results'][0]['node']->path)) {
               $result_path = $results['#results'][0]['node']->path;
@@ -190,7 +189,7 @@ function search404_page() {
           }
           else {
             if (!variable_get('search404_disable_error_message', FALSE)) {
-              drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+              drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => $keys)), 'error');
             }
             if (isset($results['#results']) && count($results['#results']) >= 1) {
               drupal_add_css(drupal_get_path('module', 'search') . '/search.css', 'module', 'all', FALSE);
@@ -203,7 +202,7 @@ function search404_page() {
         else {
           // Normal $results['#results'] doesn't exist, we will not redirect
           // and just hope the strange search module knows how to render its output.
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => $keys)), 'error');
         }
       }
     }
