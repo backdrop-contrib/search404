@@ -1,0 +1,24 @@
+{
+    "_config_name": "search404.settings",
+    "search404_redirect_301": 0,
+    "search404_do_google_cse": 0,
+    "search404_do_search_by_page": 0,
+
+    "search404_first": 0,
+    "search404_jump": 0,
+    "search404_use_or": 0,
+    "search404_ignore": 0,
+    "search404_ignore_query": 0,
+
+    "search404_ignore_extensions": 0,
+    "search404_page_text": 0,
+    "search404_page_title": 0,
+    "search404_regex": 0,
+    "search404_skip_auto_search": 0,
+
+    "search404_use_or": 0,
+    "search404_use_search_engine": 0,
+    "search404_disable_error_message": 0,
+    "search404_do_custom_search": 0,
+    "search404_custom_search_path": 0
+}
