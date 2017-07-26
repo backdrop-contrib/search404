@@ -250,7 +250,7 @@ function search404_page() {
     }
     $output = backdrop_render($form) . backdrop_render($results);
     // Add custom text before the search form and results if custom text has been set
-    $search404_page_text = config_get('search404.settings', 'search404_page_text');
+    $search404_page_text = filter_xss_admin(config_get('search404.settings', 'search404_page_text'));
     if (!empty($search404_page_text)) {
       $output = '<div id="search404-page-text">' . $search404_page_text . '</div>' . $output;
     }
